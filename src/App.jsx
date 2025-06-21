@@ -1,6 +1,10 @@
+import Homepage from "./routes/homepage/homepage"
+import SignUpPage from "./routes/signUpPage/signUpPage"
 const App = () => {
   return (
-    <div>Hello World</div>
+    <div><Homepage/>
+    <SignUpPage/>
+    </div>
   )
 }
 
