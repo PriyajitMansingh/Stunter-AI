@@ -1,45 +1,85 @@
+import { IKContext, IKImage, IKUpload } from "imagekitio-react";
+import { useRef } from "react";
 
-import { ImageKitProvider,IKContext,IKImage,IKUpload } from "@imagekit/react"
-    const authenticator = async () => {
+const urlEndpoint = import.meta.env.VITE_IMAGE_KIT_ENDPOINT;
+const publicKey = import.meta.env.VITE_IMAGE_KIT_PUBLIC_KEY;
 
-        const urlEndpoint=import.meta.env.IMAGE_KIT_ENDPOINT
-        const publicKey=import.meta.env.IMAGE_KIT_PUBLIC_KEY
+const authenticator = async () => {
+  try {
+    const response = await fetch("http://localhost:3000/api/upload");
 
-        try {
-            // Perform the request to the upload authentication endpoint.
-            const response = await fetch("http:localhost:3001/api/upload");
-            if (!response.ok) {
-                // If the server response is not successful, extract the error text for debugging.
-                const errorText = await response.text();
-                throw new Error(`Request failed with status ${response.status}: ${errorText}`);
-            }
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Request failed with status ${response.status}: ${errorText}`
+      );
+    }
 
-            // Parse and destructure the response JSON for upload credentials.
-            const data = await response.json();
-            const { signature, expire, token, publicKey } = data;
-            return { signature, expire, token, publicKey };
-        } catch (error) {
-            // Log the original error for debugging before rethrowing a new error.
-            console.error("Authentication error:", error);
-            throw new Error("Authentication request failed");
-        }
+    const data = await response.json();
+    const { signature, expire, token } = data;
+    return { signature, expire, token };
+  } catch (error) {
+    throw new Error(`Authentication request failed: ${error.message}`);
+  }
+};
+
+const Upload = ({ setImg }) => {
+  const ikUploadRef = useRef(null);
+  const onError = (err) => {
+    console.log("Error", err);
+  };
+
+  const onSuccess = (res) => {
+    console.log("Success", res);
+    setImg((prev) => ({ ...prev, isLoading: false, dbData: res }));
+  };
+
+  const onUploadProgress = (progress) => {
+    console.log("Progress", progress);
+  };
+
+  const onUploadStart = (evt) => {
+    const file = evt.target.files[0];
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImg((prev) => ({
+        ...prev,
+        isLoading: true,
+        aiData: {
+          inlineData: {
+            data: reader.result.split(",")[1],
+            mimeType: file.type,
+          },
+        },
+      }));
     };
+    reader.readAsDataURL(file);
+  };
 
-const Upload = () => {
   return (
-<IKContext
-    urlEndpoint={urlEndpoint}
-    publicKey={publicKey}
-    authenticator={authenticator}
->
-  <IKUpload
-        fileName="test-upload.jpg"
+    <IKContext
+      urlEndpoint={urlEndpoint}
+      publicKey={publicKey}
+      authenticator={authenticator}
+    >
+      <IKUpload
+        fileName="test-upload.png"
+        onError={onError}
         onSuccess={onSuccess}
-        onError={onSuccess}
+        useUniqueFileName={true}
+        onUploadProgress={onUploadProgress}
+        onUploadStart={onUploadStart}
+        style={{ display: "none" }}
+        ref={ikUploadRef}
       />
-</IKContext>
+      {
+        <label onClick={() => ikUploadRef.current.click()}>
+          <img src="/attachment.png" alt="" />
+        </label>
+      }
+    </IKContext>
+  );
+};
 
-  )
-}
-
-export default Upload
+export default Upload;

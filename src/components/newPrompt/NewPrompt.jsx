@@ -1,3 +1,4 @@
+import Upload from "../upload/Upload";
 import "./newPrompt.css";
 import { useRef,useEffect } from "react";
 
@@ -14,9 +15,7 @@ endRef.current.scrollIntoView({behavior:"smooth"})
     TEST
     <div className="endChat" ref={endRef}>
       <form className="newForm">
-        <label htmlFor="file">
-          <img src="/attachment.png" alt="" />
-        </label>
+       <Upload/>
         <input id="file" type="file" multiple={false} hidden />
         <input type="text" placeholder="Ask anythingh..." />
         <button>
