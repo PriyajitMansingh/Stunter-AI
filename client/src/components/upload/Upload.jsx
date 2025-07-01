@@ -23,7 +23,7 @@ const authenticator = async () => {
   }
 };
 
-const Upload = ({ setImg }) => {
+const Upload = ({setImg}) => {
   const ikUploadRef = useRef(null);
   const onError = (err) => {
     console.log("Error", err);
@@ -39,22 +39,8 @@ const Upload = ({ setImg }) => {
   };
 
   const onUploadStart = (evt) => {
-    const file = evt.target.files[0];
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImg((prev) => ({
-        ...prev,
-        isLoading: true,
-        aiData: {
-          inlineData: {
-            data: reader.result.split(",")[1],
-            mimeType: file.type,
-          },
-        },
-      }));
-    };
-    reader.readAsDataURL(file);
+    console.log("Start",evt)
+    setImg((prev) => ({ ...prev, isLoading: true }));
   };
 
   return (

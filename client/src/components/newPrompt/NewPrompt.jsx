@@ -1,8 +1,15 @@
+import { IKImage } from "imagekitio-react";
 import Upload from "../upload/Upload";
 import "./newPrompt.css";
-import { useRef,useEffect } from "react";
+import { useRef,useEffect,useState } from "react";
 
 const NewPrompt = () => {
+
+  const [img, setImg] = useState({
+    isLoading:false,
+    error:"",
+    dbData:{}
+  })
 
 const endRef=useRef(null)
 useEffect(()=>{
@@ -12,10 +19,18 @@ endRef.current.scrollIntoView({behavior:"smooth"})
 
   return (
     <>
-    TEST
+    {img.isLoading && <div className="">Loading...</div>}
+    {img.dbData?.filePath && (
+      <IKImage
+      urlEndpoint={import.meta.env.VITE_IMAGE_KIT_ENDPOINT}
+      path={img.dbData?.filePath}
+       width="380"
+    transformation={[{ width: 380 }]}
+      />
+    )}
     <div className="endChat" ref={endRef}>
       <form className="newForm">
-       <Upload/>
+       <Upload setImg={setImg}/>
         <input id="file" type="file" multiple={false} hidden />
         <input type="text" placeholder="Ask anythingh..." />
         <button>
