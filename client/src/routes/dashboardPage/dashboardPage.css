@@ -82,7 +82,7 @@
         border: none;
         outline: none;
         color: #ececec;
-        /* background: none; */
+        background: none;
       }
       button {
         border-color: #605e68;
@@ -93,7 +93,7 @@
         align-items: center;
         justify-content: center;
         margin-right: 20px;
-        /* background: none; */
+        background: none;
         img {
           width: 16px;
           height: 16px;
