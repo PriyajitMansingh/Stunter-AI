@@ -4,25 +4,20 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "@clerk/clerk-react";
 
-const Homepage =() => {
+const Homepage = () => {
   const [typingStatus, setTypingStatus] = useState("human1");
 
-  const {getToken} = useAuth();
-
+  const { getToken } = useAuth();
   const test = async () => {
-    const token =await getToken()
-    console.log(token)
+    const token = await getToken();
     await fetch("http://localhost:3000/api/test", {
       credentials: "include",
       header: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-    
     });
   };
-
-
 
   return (
     <div className="homepage">
@@ -35,7 +30,14 @@ const Homepage =() => {
           officia hic molestiae voluptate optio expedita quo? Animi
         </h3>
         <Link to="/dashboard">Get Started</Link>
-        <button onClick={test}>TEST BACKEND AUTH</button>
+        <button
+          style={{
+            width: "100px",
+          }}
+          onClick={test}
+        >
+          TEST BACKEND AUTH
+        </button>
       </div>
       <div className="right">
         <div className="imgContainer">

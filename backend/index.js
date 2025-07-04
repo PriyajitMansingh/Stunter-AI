@@ -5,21 +5,17 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import UserChats from "./models/userChats.js";
 import Chat from "./models/chat.js";
-import { requireAuth,clerkMiddleware} from '@clerk/express'
-
+import { requireAuth, clerkMiddleware } from "@clerk/express";
 
 dotenv.config();
-
 const app = express();
-
 app.use(clerkMiddleware());
-
 app.use(express.json());
 
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
-    credentials:true,
+    credentials: true,
   })
 );
 
@@ -43,14 +39,13 @@ app.get("/api/upload", (req, res) => {
   res.send(result);
 });
 
-app.get("/api/test",requireAuth(),(req,res)=>{
-  console.log("success")
-  res.send("Success!")
-})
+app.get("/api/test", requireAuth(), (req, res) => {
+  console.log("clerk-user-id", req.auth.userId);
+  res.json({ userId: req.auth.userId });
+});
 
-app.post("/api/chats",  requireAuth(),async (req, res) => {
+app.post("/api/chats", requireAuth(), async (req, res) => {
   const { userId, text } = req.body;
-
 
   try {
     //CREATING A NEW CHAT
@@ -91,7 +86,7 @@ app.post("/api/chats",  requireAuth(),async (req, res) => {
         }
       );
 
-      res.status(201).send(newChat._id)
+      res.status(201).send(newChat._id);
     }
   } catch (err) {
     console.log(err);
@@ -101,9 +96,8 @@ app.post("/api/chats",  requireAuth(),async (req, res) => {
 
 app.use((err, req, res, next) => {
   console.error(err.stack); // log the error
-  res.status(401).send("Unauthorized!")
+  res.status(401).send("Unauthorized!");
 });
-
 
 app.listen(process.env.PORT, () => {
   connect();
