@@ -5,16 +5,21 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import UserChats from "./models/userChats.js";
 import Chat from "./models/chat.js";
+import { requireAuth,clerkMiddleware} from '@clerk/express'
+
 
 dotenv.config();
 
 const app = express();
+
+app.use(clerkMiddleware());
 
 app.use(express.json());
 
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
+    credentials:true,
   })
 );
 
@@ -38,7 +43,12 @@ app.get("/api/upload", (req, res) => {
   res.send(result);
 });
 
-app.post("/api/chats", async (req, res) => {
+app.get("/api/test",requireAuth(),(req,res)=>{
+  console.log("success")
+  res.send("Success!")
+})
+
+app.post("/api/chats",  requireAuth(),async (req, res) => {
   const { userId, text } = req.body;
 
 
@@ -88,6 +98,12 @@ app.post("/api/chats", async (req, res) => {
     res.status(500).send("Error creating chat");
   }
 });
+
+app.use((err, req, res, next) => {
+  console.error(err.stack); // log the error
+  res.status(401).send("Unauthorized!")
+});
+
 
 app.listen(process.env.PORT, () => {
   connect();
